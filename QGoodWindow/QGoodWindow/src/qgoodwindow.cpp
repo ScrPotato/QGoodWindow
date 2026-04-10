@@ -225,6 +225,7 @@ inline bool isWin11OrGreater()
 #include <QtGui/private/qtx11extras_p.h>
 #endif
 #include <X11/Xlib.h>
+
 #include <X11/cursorfont.h>
 #include <xcb/xcb.h>
 
@@ -760,10 +761,20 @@ bool QGoodWindow::isSystemThemeDark()
     }
 #endif
 #ifdef Q_OS_LINUX
-    GtkSettings *settings = gtk_settings_get_default();
-    gchar *theme_name;
-    g_object_get(settings, "gtk-theme-name", &theme_name, nullptr);
-    dark = QString(theme_name).endsWith("Dark", Qt::CaseInsensitive);
+    dark = false;
+
+    if (gtk_init_check(nullptr, nullptr)) {
+        GtkSettings *settings = gtk_settings_get_default();
+        if (settings) {
+            gchar *theme_name = nullptr;
+            g_object_get(settings, "gtk-theme-name", &theme_name, nullptr);
+
+            if (theme_name) {
+                dark = QString::fromUtf8(theme_name).contains("dark", Qt::CaseInsensitive);
+                g_free(theme_name);
+            }
+        }
+    }
 #endif
 #ifdef Q_OS_MAC
     dark = QString(macOSNative::themeName()).endsWith("Dark", Qt::CaseInsensitive);
@@ -1444,6 +1455,9 @@ void QGoodWindow::show()
     }
 
     ShowWindow(m_hwnd, SW_SHOW);
+#elif defined(Q_OS_LINUX)
+    resize(size()); // under linux the size at spawn is always minimum, patch?
+    QMainWindow::show();
 #else
     QMainWindow::show();
 #endif
@@ -1872,7 +1886,6 @@ bool QGoodWindow::event(QEvent *event)
             break;
 
 //Catch QMenu show event to fix show bug on high DPI.
-#if defined QT_VERSION_QT5 && QT_VERSION >= QT_VERSION_CHECK(5, 14, 0)
         for (QWidget *widget : widget->findChildren<QWidget*>())
         {
             if (widget->metaObject()->className() == QStringLiteral("QMenu") ||
@@ -1881,7 +1894,6 @@ bool QGoodWindow::event(QEvent *event)
                 widget->installEventFilter(this);
             }
         }
-#endif
 
         if (!widget->isWindow())
             break;
@@ -2148,7 +2160,6 @@ bool QGoodWindow::eventFilter(QObject *watched, QEvent *event)
             break;
         }
     }
-#if defined QT_VERSION_QT5 && QT_VERSION >= QT_VERSION_CHECK(5, 14, 0)
     else if (watched->metaObject()->className() == QStringLiteral("QMenu") ||
                watched->metaObject()->className() == QStringLiteral("QComboBoxPrivateContainer"))
     {
@@ -2175,11 +2186,22 @@ bool QGoodWindow::eventFilter(QObject *watched, QEvent *event)
                 QScreen *screen = windowHandle()->screen();
                 widget->windowHandle()->setScreen(screen);
 
-                int x = qFloor(screen->geometry().x() / m_pixel_ratio);
-                int y = qFloor(screen->geometry().y() / m_pixel_ratio);
+                QRect virtualGeometryUnified;
+                const QList<QScreen*> screens = QGuiApplication::screens();
 
-                x += widget->x();
-                y += widget->y();
+                for (QScreen* s : screens) {
+                    virtualGeometryUnified = virtualGeometryUnified.united(s->geometry());
+                }
+
+                QRect screenGeo = screen->geometry();
+
+                int x = screenGeo.x() + widget->x();
+                int y = screenGeo.y() + widget->y();
+
+                if(x < 0)
+                    x -= virtualGeometryUnified.x();
+                if(y < 0)
+                    y -= virtualGeometryUnified.y();
 
                 widget->move(x, y);
 
@@ -2190,7 +2212,6 @@ bool QGoodWindow::eventFilter(QObject *watched, QEvent *event)
             }
         }
     }
-#endif
     else if (QWidget *widget = qobject_cast<QWidget*>(watched))
     {
         if (widget->isWindow())
@@ -4109,6 +4130,7 @@ void QGoodWindow::iconClicked()
 }
 #endif
 #ifdef Q_OS_LINUX
+#undef CursorShape
 void QGoodWindow::setCursorForCurrentPos()
 {
     const QPoint cursor_pos = QCursor::pos();
@@ -4125,144 +4147,136 @@ void QGoodWindow::setCursorForCurrentPos()
         return;
     }
 
+    const bool wayland = QGuiApplication::platformName().startsWith("wayland");
+
+    auto setQtCursor = [](Qt::CursorShape cursorShape)
+    {
+        const QCursor *c = QApplication::overrideCursor();
+        if (c && c->shape() == cursorShape)
+            return;
+
+        QApplication::setOverrideCursor(QCursor(cursorShape));
+    };
+
+    if (wayland)
+    {
+        switch (margin)
+        {
+        case HTTOPLEFT:
+            setQtCursor(!FIXED_SIZE(this) ? Qt::SizeFDiagCursor : Qt::ArrowCursor);
+            break;
+
+        case HTTOP:
+            setQtCursor(!FIXED_HEIGHT(this) ? Qt::SizeVerCursor : Qt::ArrowCursor);
+            break;
+
+        case HTTOPRIGHT:
+            setQtCursor(!FIXED_SIZE(this) ? Qt::SizeBDiagCursor : Qt::ArrowCursor);
+            break;
+
+        case HTLEFT:
+            setQtCursor(!FIXED_WIDTH(this) ? Qt::SizeHorCursor : Qt::ArrowCursor);
+            break;
+
+        case HTRIGHT:
+            setQtCursor(!FIXED_WIDTH(this) ? Qt::SizeHorCursor : Qt::ArrowCursor);
+            break;
+
+        case HTBOTTOMLEFT:
+            setQtCursor(!FIXED_SIZE(this) ? Qt::SizeBDiagCursor : Qt::ArrowCursor);
+            break;
+
+        case HTBOTTOM:
+            setQtCursor(!FIXED_HEIGHT(this) ? Qt::SizeVerCursor : Qt::ArrowCursor);
+            break;
+
+        case HTBOTTOMRIGHT:
+            setQtCursor(!FIXED_SIZE(this) ? Qt::SizeFDiagCursor : Qt::ArrowCursor);
+            break;
+
+        case HTCAPTION:
+        case HTMINBUTTON:
+        case HTMAXBUTTON:
+        case HTCLOSE:
+            setQtCursor(Qt::ArrowCursor);
+            break;
+
+        case HTNOWHERE:
+            QApplication::restoreOverrideCursor();
+            break;
+
+        default:
+            break;
+        }
+
+        return;
+    }
     Display *dpy = QX11Info::display();
 
     switch (margin)
     {
     case HTTOPLEFT:
     {
-        Cursor cursor;
-
-        if (!FIXED_SIZE(this))
-            cursor = XCreateFontCursor(dpy, XC_top_left_corner);
-        else
-            cursor = XCreateFontCursor(dpy, XC_arrow);
-
+        Cursor cursor = XCreateFontCursor(dpy, !FIXED_SIZE(this) ? XC_top_left_corner : XC_arrow);
         XDefineCursor(dpy, Window(widget->winId()), cursor);
-
         XFlush(dpy);
-
         XFreeCursor(dpy, cursor);
-
         break;
     }
     case HTTOP:
     {
-        Cursor cursor;
-
-        if (!FIXED_HEIGHT(this))
-            cursor = XCreateFontCursor(dpy, XC_top_side);
-        else
-            cursor = XCreateFontCursor(dpy, XC_arrow);
-
+        Cursor cursor = XCreateFontCursor(dpy, !FIXED_HEIGHT(this) ? XC_top_side : XC_arrow);
         XDefineCursor(dpy, Window(widget->winId()), cursor);
-
         XFlush(dpy);
-
         XFreeCursor(dpy, cursor);
-
         break;
     }
     case HTTOPRIGHT:
     {
-        Cursor cursor;
-
-        if (!FIXED_SIZE(this))
-            cursor = XCreateFontCursor(dpy, XC_top_right_corner);
-        else
-            cursor = XCreateFontCursor(dpy, XC_arrow);
-
+        Cursor cursor = XCreateFontCursor(dpy, !FIXED_SIZE(this) ? XC_top_right_corner : XC_arrow);
         XDefineCursor(dpy, Window(widget->winId()), cursor);
-
         XFlush(dpy);
-
         XFreeCursor(dpy, cursor);
-
         break;
     }
     case HTLEFT:
     {
-        Cursor cursor;
-
-        if (!FIXED_WIDTH(this))
-            cursor = XCreateFontCursor(dpy, XC_left_side);
-        else
-            cursor = XCreateFontCursor(dpy, XC_arrow);
-
+        Cursor cursor = XCreateFontCursor(dpy, !FIXED_WIDTH(this) ? XC_left_side : XC_arrow);
         XDefineCursor(dpy, Window(widget->winId()), cursor);
-
         XFlush(dpy);
-
         XFreeCursor(dpy, cursor);
-
         break;
     }
     case HTRIGHT:
     {
-        Cursor cursor;
-
-        if (!FIXED_WIDTH(this))
-            cursor = XCreateFontCursor(dpy, XC_right_side);
-        else
-            cursor = XCreateFontCursor(dpy, XC_arrow);
-
+        Cursor cursor = XCreateFontCursor(dpy, !FIXED_WIDTH(this) ? XC_right_side : XC_arrow);
         XDefineCursor(dpy, Window(widget->winId()), cursor);
-
         XFlush(dpy);
-
         XFreeCursor(dpy, cursor);
-
         break;
     }
     case HTBOTTOMLEFT:
     {
-        Cursor cursor;
-
-        if (!FIXED_SIZE(this))
-            cursor = XCreateFontCursor(dpy, XC_bottom_left_corner);
-        else
-            cursor = XCreateFontCursor(dpy, XC_arrow);
-
+        Cursor cursor = XCreateFontCursor(dpy, !FIXED_SIZE(this) ? XC_bottom_left_corner : XC_arrow);
         XDefineCursor(dpy, Window(widget->winId()), cursor);
-
         XFlush(dpy);
-
         XFreeCursor(dpy, cursor);
-
         break;
     }
     case HTBOTTOM:
     {
-        Cursor cursor;
-
-        if (!FIXED_HEIGHT(this))
-            cursor = XCreateFontCursor(dpy, XC_bottom_side);
-        else
-            cursor = XCreateFontCursor(dpy, XC_arrow);
-
+        Cursor cursor = XCreateFontCursor(dpy, !FIXED_HEIGHT(this) ? XC_bottom_side : XC_arrow);
         XDefineCursor(dpy, Window(widget->winId()), cursor);
-
         XFlush(dpy);
-
         XFreeCursor(dpy, cursor);
-
         break;
     }
     case HTBOTTOMRIGHT:
     {
-        Cursor cursor;
-
-        if (!FIXED_SIZE(this))
-            cursor = XCreateFontCursor(dpy, XC_bottom_right_corner);
-        else
-            cursor = XCreateFontCursor(dpy, XC_arrow);
-
+        Cursor cursor = XCreateFontCursor(dpy, !FIXED_SIZE(this) ? XC_bottom_right_corner : XC_arrow);
         XDefineCursor(dpy, Window(widget->winId()), cursor);
-
         XFlush(dpy);
-
         XFreeCursor(dpy, cursor);
-
         break;
     }
     case HTCAPTION:
@@ -4271,11 +4285,10 @@ void QGoodWindow::setCursorForCurrentPos()
     case HTCLOSE:
     {
         if (QApplication::overrideCursor() &&
-                QApplication::overrideCursor()->shape() == Qt::ArrowCursor)
+            QApplication::overrideCursor()->shape() == Qt::ArrowCursor)
             break;
 
         QApplication::setOverrideCursor(Qt::ArrowCursor);
-
         break;
     }
     case HTNOWHERE:
@@ -4287,14 +4300,12 @@ void QGoodWindow::setCursorForCurrentPos()
             break;
 
         QApplication::restoreOverrideCursor();
-
         break;
     }
     default:
         break;
     }
 }
-
 void QGoodWindow::startSystemMoveResize()
 {
     const int margin = m_margin;
@@ -4304,6 +4315,39 @@ void QGoodWindow::startSystemMoveResize()
 
     if (FIXED_SIZE(this) && margin != HTCAPTION)
         return;
+
+    if (QGuiApplication::platformName().startsWith("wayland"))
+    {
+        QWindow *w = windowHandle();
+        if (!w)
+            return;
+
+        if (margin == HTCAPTION)
+        {
+            w->startSystemMove();
+        }
+        else
+        {
+            Qt::Edges edges;
+
+            if (margin == HTLEFT || margin == HTTOPLEFT || margin == HTBOTTOMLEFT)
+                edges |= Qt::LeftEdge;
+            if (margin == HTRIGHT || margin == HTTOPRIGHT || margin == HTBOTTOMRIGHT)
+                edges |= Qt::RightEdge;
+            if (margin == HTTOP || margin == HTTOPLEFT || margin == HTTOPRIGHT)
+                edges |= Qt::TopEdge;
+            if (margin == HTBOTTOM || margin == HTBOTTOMLEFT || margin == HTBOTTOMRIGHT)
+                edges |= Qt::BottomEdge;
+
+            w->startSystemResize(edges);
+        }
+
+        QTimer::singleShot(qApp->doubleClickInterval(), this, [=]{
+            m_resize_move_started = true;
+        });
+
+        return;
+    }
 
     QPoint cursor_pos = QPoint(qFloor(m_cursor_pos.x() * m_pixel_ratio), qFloor(m_cursor_pos.y() * m_pixel_ratio));
 
@@ -4458,6 +4502,10 @@ qintptr QGoodWindow::ncHitTest(int pos_x, int pos_y)
     }
 
     int border_width = 0;
+
+#ifdef Q_OS_LINUX
+    border_width = qFloor(6 * m_pixel_ratio);
+#endif
 
 #ifdef Q_OS_WIN
     if (windowState().testFlag(Qt::WindowNoState))

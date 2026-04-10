@@ -63,8 +63,8 @@ endif()
 
 if(WIN32)
     target_link_libraries(${PROJECT_NAME} PUBLIC
-        Gdi32
-        User32
+        gdi32
+        user32
     )
 
     set_property(TARGET ${PROJECT_NAME} PROPERTY WIN32_EXECUTABLE true)

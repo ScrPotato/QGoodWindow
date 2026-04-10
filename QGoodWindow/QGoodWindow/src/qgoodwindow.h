@@ -33,6 +33,10 @@ SOFTWARE.
 #include "lightstyle.h"
 #include "darkstyle.h"
 
+#ifdef Q_OS_WIN
+#include <windows.h>
+#endif
+
 #include "qgoodwindow_global.h"
 
 #ifdef QGOODWINDOW

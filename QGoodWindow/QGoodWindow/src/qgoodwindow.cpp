@@ -1886,6 +1886,7 @@ bool QGoodWindow::event(QEvent *event)
             break;
 
 //Catch QMenu show event to fix show bug on high DPI.
+#if QT_VERSION >= QT_VERSION_CHECK(5, 14, 0)
         for (QWidget *widget : widget->findChildren<QWidget*>())
         {
             if (widget->metaObject()->className() == QStringLiteral("QMenu") ||
@@ -1894,7 +1895,7 @@ bool QGoodWindow::event(QEvent *event)
                 widget->installEventFilter(this);
             }
         }
-
+#endif
         if (!widget->isWindow())
             break;
 
@@ -2160,6 +2161,7 @@ bool QGoodWindow::eventFilter(QObject *watched, QEvent *event)
             break;
         }
     }
+#if QT_VERSION >= QT_VERSION_CHECK(5, 14, 0)
     else if (watched->metaObject()->className() == QStringLiteral("QMenu") ||
                watched->metaObject()->className() == QStringLiteral("QComboBoxPrivateContainer"))
     {
@@ -2212,6 +2214,7 @@ bool QGoodWindow::eventFilter(QObject *watched, QEvent *event)
             }
         }
     }
+#endif
     else if (QWidget *widget = qobject_cast<QWidget*>(watched))
     {
         if (widget->isWindow())

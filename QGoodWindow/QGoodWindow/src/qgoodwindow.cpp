@@ -352,7 +352,7 @@ QGoodWindow::QGoodWindow(QWidget *parent, const QColor &clear_color) : QMainWind
     HWND parent_hwnd = nullptr;
 
     if (m_parent)
-        parent_hwnd = HWND(m_parent->winId());
+        parent_hwnd = HWND(m_parent->window()->winId());
 
     WNDCLASSEXW wcx;
     memset(&wcx, 0, sizeof(WNDCLASSEXW));

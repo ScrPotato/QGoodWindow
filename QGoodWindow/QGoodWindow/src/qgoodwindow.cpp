@@ -1870,8 +1870,20 @@ void QGoodWindow::updateEffectiveStyleSheet()
 {
     m_inheritedStyleSheet.clear();
 
-    if (m_parent)
-        m_inheritedStyleSheet = m_parent->styleSheet();
+    QStringList inheritedSheets;
+
+    QWidget *w = m_parent;
+
+    while (w) {
+        const QString sheet = w->styleSheet();
+
+        if (!sheet.isEmpty())
+            inheritedSheets.prepend(sheet);
+
+        w = w->parentWidget();
+    }
+
+    m_inheritedStyleSheet = inheritedSheets.join(QLatin1Char('\n'));
 
     QString effective = m_inheritedStyleSheet;
 

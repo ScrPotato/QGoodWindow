@@ -419,6 +419,11 @@ public Q_SLOTS:
     /** Restore *QGoodWindow* to previous geometry \e geometry. */
     bool restoreGeometry(const QByteArray &geometry);
 
+#ifdef Q_OS_WIN
+    QString styleSheet() const;
+    void setStyleSheet(const QString &styleSheet);
+#endif
+
 protected:
     //\cond HIDDEN_SYMBOLS
     //Functions
@@ -548,6 +553,8 @@ private:
 
     QString m_ownStyleSheet;
     QString m_inheritedStyleSheet;
+
+    void updateEffectiveStyleSheet();
 #endif
     //Functions
     qintptr ncHitTest(int pos_x, int pos_y);

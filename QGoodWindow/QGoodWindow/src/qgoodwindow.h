@@ -545,6 +545,9 @@ private:
     int m_minimum_height;
     int m_maximum_width;
     int m_maximum_height;
+
+    QString m_ownStyleSheet;
+    QString m_inheritedStyleSheet;
 #endif
     //Functions
     qintptr ncHitTest(int pos_x, int pos_y);

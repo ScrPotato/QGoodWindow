@@ -427,18 +427,7 @@ QGoodWindow::QGoodWindow(QWidget *parent, const QColor &clear_color) : QMainWind
         m_parent->installEventFilter(this);
 
 #ifdef Q_OS_WIN
-        m_inheritedStyleSheet = m_parent->styleSheet();
-
-        QString effective = m_inheritedStyleSheet;
-
-        if (!m_ownStyleSheet.isEmpty()) {
-            if (!effective.isEmpty())
-                effective += QLatin1Char('\n');
-
-            effective += m_ownStyleSheet;
-        }
-
-        setStyleSheet(effective);
+        updateEffectiveStyleSheet();
 #endif
     }
 
@@ -1865,6 +1854,38 @@ bool QGoodWindow::restoreGeometry(const QByteArray &geometry)
 #endif
 }
 
+#ifdef Q_OS_WIN
+QString QGoodWindow::styleSheet() const
+{
+    return m_ownStyleSheet;
+}
+
+void QGoodWindow::setStyleSheet(const QString &styleSheet)
+{
+    m_ownStyleSheet = styleSheet;
+    updateEffectiveStyleSheet();
+}
+
+void QGoodWindow::updateEffectiveStyleSheet()
+{
+    m_inheritedStyleSheet.clear();
+
+    if (m_parent)
+        m_inheritedStyleSheet = m_parent->styleSheet();
+
+    QString effective = m_inheritedStyleSheet;
+
+    if (!m_ownStyleSheet.isEmpty()) {
+        if (!effective.isEmpty())
+            effective += QLatin1Char('\n');
+
+        effective += m_ownStyleSheet;
+    }
+
+    QMainWindow::setStyleSheet(effective);
+}
+#endif
+
 bool QGoodWindow::event(QEvent *event)
 {
 #if defined Q_OS_LINUX || defined Q_OS_MAC
@@ -2176,18 +2197,7 @@ bool QGoodWindow::eventFilter(QObject *watched, QEvent *event)
 #ifdef Q_OS_WIN
         case QEvent::StyleChange:
         {
-            m_inheritedStyleSheet = m_parent->styleSheet();
-
-            QString effective = m_inheritedStyleSheet;
-
-            if (!m_ownStyleSheet.isEmpty()) {
-                if (!effective.isEmpty())
-                    effective += QLatin1Char('\n');
-
-                effective += m_ownStyleSheet;
-            }
-
-            setStyleSheet(effective);
+            updateEffectiveStyleSheet();
             break;
         }
 #endif

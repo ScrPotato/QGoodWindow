@@ -215,6 +215,14 @@ inline bool isWin11OrGreater()
 }
 #endif
 
+#if QT_VERSION >= QT_VERSION_CHECK(6, 0, 0)
+#include <utility>
+#define QGOODWINDOW_AS_CONST std::as_const
+#else
+#define QGOODWINDOW_AS_CONST qAsConst
+#endif
+
+
 #ifdef Q_OS_LINUX
 #ifdef QT_VERSION_QT5
 #include <QtX11Extras/QX11Info>
@@ -223,13 +231,6 @@ inline bool isWin11OrGreater()
 
 #include <X11/cursorfont.h>
 #include <xcb/xcb.h>
-
-#if QT_VERSION >= QT_VERSION_CHECK(6, 0, 0)
-#include <utility>
-#define QGOODWINDOW_AS_CONST std::as_const
-#else
-#define QGOODWINDOW_AS_CONST qAsConst
-#endif
 
 namespace QGoodWindowUtils
 {
@@ -325,7 +326,7 @@ QGoodWindow::QGoodWindow(QWidget *parent, const QColor &clear_color) : QMainWind
     m_self_generated_close_event = false;
 
     m_timer_move = new QTimer(this);
-    connect(m_timer_move, &QTimer::timeout, this, [=]{
+    connect(m_timer_move, &QTimer::timeout, this, [=, this]{
         QScreen *screen = screenForWindow(m_hwnd);
 
         if (windowHandle()->screen() != screen)
@@ -2297,7 +2298,7 @@ bool QGoodWindow::eventFilter(QObject *watched, QEvent *event)
                 if (!FIXED_SIZE(widget))
                     break;
 
-                QTimer::singleShot(0, this, [=]{
+                QTimer::singleShot(0, this, [=, this]{
                     moveCenterWindow(widget);
                 });
 
@@ -4189,7 +4190,7 @@ void QGoodWindow::iconClicked()
 
         showContextMenu();
 
-        QTimer::singleShot(qApp->doubleClickInterval(), this, [=]{
+        QTimer::singleShot(qApp->doubleClickInterval(), this, [=, this]{
             m_is_menu_visible = false;
         });
     }

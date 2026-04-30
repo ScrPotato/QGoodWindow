@@ -4595,12 +4595,17 @@ void QGoodWindow::notificationReceiver(const QByteArray &notification)
 #ifdef QGOODWINDOW
 qintptr QGoodWindow::ncHitTest(int pos_x, int pos_y)
 {
-    if (isFullScreen()) {
+    if (isFullScreen())
+    {
         //If on full screen, the whole window can be clicked.
         return HTNOWHERE;
     }
 
     int border_width = 0;
+
+#ifdef Q_OS_LINUX
+    border_width = qFloor(BORDERWIDTHDPI / m_pixel_ratio);
+#endif
 
 #ifdef Q_OS_WIN
     if (windowState().testFlag(Qt::WindowNoState))
@@ -4611,17 +4616,16 @@ qintptr QGoodWindow::ncHitTest(int pos_x, int pos_y)
             border_width = qFloor(1 * m_pixel_ratio); //in pixels.
     }
 #endif
-#ifdef Q_OS_LINUX
-    border_width = qFloor(BORDERWIDTHDPI * m_pixel_ratio);
-#endif
 
 //Get the window rectangle.
-#ifdef Q_OS_MAC
+#ifndef Q_OS_MAC
+    QRect window_rect = frameGeometry();
+#else
+    //Get the correct window rectangle for macOS.
     QRect window_rect;
 
     if (isVisible())
     {
-        //Get the correct window rectangle for macOS.
         int x, y, w, h;
         macOSNative::frameGeometry(long(winId()), &x, &y, &w, &h);
         window_rect = QRect(x, y, w, h);
@@ -4629,18 +4633,10 @@ qintptr QGoodWindow::ncHitTest(int pos_x, int pos_y)
 #endif
 
     //Get the point coordinates for the hit test.
-    const QPoint cursor_pos(qFloor(pos_x / m_pixel_ratio),
-                            qFloor(pos_y / m_pixel_ratio));
+    const QPoint cursor_pos = QPoint(qFloor(pos_x / m_pixel_ratio), qFloor(pos_y / m_pixel_ratio));
 
     //Get the mapped point coordinates for the hit test without border width.
-#if defined(Q_OS_WIN) || defined(Q_OS_MAC)
-    const QPoint cursor_pos_map(cursor_pos.x() - window_rect.x() - border_width,
-                                cursor_pos.y() - window_rect.y());
-#else
-    const QPoint cursor_pos_map = mapFromGlobal(cursor_pos);
-#endif
-
-    const bool inside = rect().contains(cursor_pos_map);
+    const QPoint cursor_pos_map = QPoint(cursor_pos.x() - window_rect.x() - border_width, cursor_pos.y() - window_rect.y());
 
 #ifdef Q_OS_WIN
     for (QSizeGrip *size_grip : findChildren<QSizeGrip*>())
@@ -4649,6 +4645,7 @@ qintptr QGoodWindow::ncHitTest(int pos_x, int pos_y)
             !size_grip->window()->windowFlags().testFlag(Qt::SubWindow))
         {
             QPoint cursor_pos_map_widget = size_grip->parentWidget()->mapFromGlobal(cursor_pos);
+
             QPoint adjusted_pos = screenAdjustedPos();
 
             cursor_pos_map_widget.setX(cursor_pos_map_widget.x() + adjusted_pos.x());
@@ -4672,26 +4669,26 @@ qintptr QGoodWindow::ncHitTest(int pos_x, int pos_y)
     bool on_resize_border = false;
 
     //Determine if the point is at the top or bottom of the window.
-    if (cursor_pos_map.y() < title_bar_height)
+    if (cursor_pos.y() < window_rect.top() + title_bar_height)
     {
-        on_resize_border = cursor_pos_map.y() < border_width;
+        on_resize_border = (cursor_pos.y() < (window_rect.top() + border_width));
         row = 0; //top border.
     }
-    else if (cursor_pos_map.y() >= height() - border_width)
+    else if (cursor_pos.y() > window_rect.bottom() - border_width)
     {
         row = 2; //bottom border.
     }
 
     //Determine if the point is at the left or right of the window.
-    if (cursor_pos_map.x() < border_width)
+    if (cursor_pos.x() < window_rect.left() + border_width)
     {
         col = 0; //left border.
     }
-    else if (cursor_pos_map.x() >= width() - border_width)
+    else if (cursor_pos.x() > window_rect.right() - border_width)
     {
         col = 2; //right border.
     }
-    else if (row == 0 && !on_resize_border && inside)
+    else if (row == 0 && !on_resize_border)
     {
         if (m_cls_mask.contains(cursor_pos_map))
             return HTCLOSE; //title bar close button.
@@ -4706,9 +4703,6 @@ qintptr QGoodWindow::ncHitTest(int pos_x, int pos_y)
         else if (m_title_bar_mask.contains(cursor_pos_map))
             return HTNOWHERE; //user title bar mask.
     }
-
-    if (!inside && row == 1 && col == 1)
-        return HTNOWHERE;
 
     //Hit test (HTTOPLEFT, ... HTBOTTOMRIGHT)
     qintptr hitTests[3][3] =

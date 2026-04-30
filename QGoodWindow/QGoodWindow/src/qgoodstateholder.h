@@ -25,9 +25,7 @@ SOFTWARE.
 #ifndef QGOODSTATEHOLDER
 #define QGOODSTATEHOLDER
 
-#include <QtCore>
-#include <QtGui>
-#include <QtWidgets>
+#include <QObject>
 
 #include "qgoodwindow_global.h"
 
@@ -37,6 +35,7 @@ class QGOODWINDOW_SHARED_EXPORT QGoodStateHolder : public QObject
     Q_OBJECT
 public:
     static QGoodStateHolder *instance();
+    bool isCurrentThemeDark() const;
 
 private:
     explicit QGoodStateHolder();
@@ -46,7 +45,6 @@ Q_SIGNALS:
     void currentThemeChanged();
 
 public Q_SLOTS:
-    bool isCurrentThemeDark() const;
     void setCurrentThemeDark(bool dark);
 
 private:

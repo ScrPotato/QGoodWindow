@@ -141,14 +141,14 @@ void CaptionButton::setColors()
         if (m_type == IconType::Close)
         {
             m_normal = QColor("transparent");
-            m_hover = QColor("#F00000");
-            m_pressed = QColor("#F1707A");
+            m_hover = QColor(0xF00000);
+            m_pressed = QColor(0xF1707A);
         }
         else
         {
             m_normal = QColor("transparent");
-            m_hover = QColor("#E5E5E5");
-            m_pressed = QColor("#CACACB");
+            m_hover = QColor(0xE5E5E5);
+            m_pressed = QColor(0xCACACB);
         }
     }
     else
@@ -156,14 +156,14 @@ void CaptionButton::setColors()
         if (m_type == IconType::Close)
         {
             m_normal = QColor("transparent");
-            m_hover = QColor("#F00000");
-            m_pressed = QColor("#F1707A");
+            m_hover = QColor(0xF00000);
+            m_pressed = QColor(0xF1707A);
         }
         else
         {
             m_normal = QColor("transparent");
-            m_hover = QColor("#505050");
-            m_pressed = QColor("#3F3F3F");
+            m_hover = QColor(0x505050);
+            m_pressed = QColor(0x3F3F3F);
         }
     }
 

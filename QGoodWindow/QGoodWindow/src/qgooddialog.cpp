@@ -84,7 +84,7 @@ int QGoodDialog::exec()
     bool is_message_box = qobject_cast<QMessageBox*>(m_dialog);
     bool is_input_dialog = qobject_cast<QInputDialog*>(m_dialog);
 
-    auto func_center = [=]{
+    auto func_center = [=, this]{
         QScreen *parent_screen = m_parent_gw->windowHandle()->screen();
 
         qreal pixel_ratio = parent_screen->devicePixelRatio();
@@ -109,7 +109,7 @@ int QGoodDialog::exec()
         m_child_gw->setGeometry(child_geom);
     };
 
-    auto func_fixed_size = [=]{
+    auto func_fixed_size = [=, this]{
         if (is_message_box || is_input_dialog)
         {
             m_child_gw->setFixedSize(m_child_gw->sizeHint());
@@ -166,7 +166,7 @@ int QGoodDialog::exec()
     QShortcut *shortcut = new QShortcut(QKeySequence(Qt::Key_Escape), m_child_gw);
     connect(shortcut, &QShortcut::activated, m_dialog, &QDialog::reject);
 
-    QTimer::singleShot(0, m_child_gw, [=]{
+    QTimer::singleShot(0, m_child_gw, [=, this]{
 #ifdef Q_OS_WIN
         if (m_child_gw->m_shadow)
             m_child_gw->m_shadow->showLater();

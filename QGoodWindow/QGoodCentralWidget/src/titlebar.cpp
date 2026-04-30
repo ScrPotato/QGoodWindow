@@ -143,7 +143,7 @@ TitleBar::TitleBar(QGoodWindow *gw, QGoodCentralWidget *gcw, QWidget *parent) : 
     layout->addWidget(m_right_widget_place_holder);
     layout->addWidget(m_caption_buttons);
 
-    QTimer::singleShot(0, this, [=]{
+    QTimer::singleShot(0, this, [=, this]{
         //All caption button starts in hidden state,
         //showing them as needed.
 
@@ -228,7 +228,7 @@ void TitleBar::setTheme()
 
     if (dark)
     {
-        QTimer::singleShot(0, this, [=]{
+        QTimer::singleShot(0, this, [=, this]{
             if (m_title_bar_color == QColor(Qt::transparent))
                 setAttribute(Qt::WA_TranslucentBackground, true);
             else if (m_title_bar_color.isValid())
@@ -251,7 +251,7 @@ void TitleBar::setTheme()
     }
     else
     {
-        QTimer::singleShot(0, this, [=]{
+        QTimer::singleShot(0, this, [=, this]{
             if (m_title_bar_color == QColor(Qt::transparent))
                 setAttribute(Qt::WA_TranslucentBackground, true);
             else if (m_title_bar_color.isValid())

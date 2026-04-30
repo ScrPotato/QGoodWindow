@@ -25,9 +25,8 @@ SOFTWARE.
 #ifndef TITLEWIDGET_H
 #define TITLEWIDGET_H
 
-#include <QtCore>
-#include <QtGui>
-#include <QtWidgets>
+#include <QWidget>
+#include <QPointer>
 
 class TitleBar;
 

@@ -24,7 +24,10 @@ SOFTWARE.
 */
 
 #include "darkstyle.h"
+
+#ifdef Q_OS_WIN
 #include "stylecommon.h"
+#endif
 
 DarkStyle::DarkStyle() : DarkStyle(styleBase())
 {

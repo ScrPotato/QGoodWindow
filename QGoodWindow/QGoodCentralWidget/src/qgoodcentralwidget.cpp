@@ -65,11 +65,11 @@ QGoodCentralWidget::QGoodCentralWidget(QGoodWindow *gw) : QWidget(gw)
     connect(m_title_bar, &TitleBar::showMaximized, m_gw, &QGoodWindow::showMaximized);
     connect(m_title_bar, &TitleBar::closeWindow, m_gw, &QGoodWindow::close);
 
-    connect(m_gw, &QGoodWindow::windowTitleChanged, m_title_bar, [=](const QString &title){
+    connect(m_gw, &QGoodWindow::windowTitleChanged, m_title_bar, [=, this](const QString &title){
         m_title_bar->setTitle(title);
     });
 
-    connect(m_gw, &QGoodWindow::windowIconChanged, m_title_bar, [=](const QIcon &icon){
+    connect(m_gw, &QGoodWindow::windowIconChanged, m_title_bar, [=, this](const QIcon &icon){
         if (!icon.isNull())
         {
             const int pix_size = 16;
@@ -955,7 +955,7 @@ bool QGoodCentralWidget::event(QEvent *event)
     case QEvent::Show:
     case QEvent::Resize:
     {
-        QTimer::singleShot(0, this, [=]{
+        QTimer::singleShot(0, this, [=, this]{
             if (!m_gw)
                 return;
 

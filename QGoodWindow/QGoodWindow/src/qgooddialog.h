@@ -25,9 +25,9 @@ SOFTWARE.
 #ifndef QGOODDIALOG_H
 #define QGOODDIALOG_H
 
-#include <QtCore>
-#include <QtGui>
-#include <QtWidgets>
+#include <QDialog>
+#include <QPointer>
+#include <QEventLoop>
 
 class QGoodWindow;
 

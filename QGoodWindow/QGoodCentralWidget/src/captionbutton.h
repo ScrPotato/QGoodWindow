@@ -25,10 +25,9 @@ SOFTWARE.
 #ifndef CAPTIONBUTTON_H
 #define CAPTIONBUTTON_H
 
-#include <QtCore>
-#include <QtGui>
-#include <QtWidgets>
-#include <QtSvg>
+#include <QWidget>
+#include <QPainter>
+#include <QEvent>
 
 //\cond HIDDEN_SYMBOLS
 class CaptionButton : public QWidget

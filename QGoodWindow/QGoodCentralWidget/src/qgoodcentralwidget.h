@@ -102,60 +102,6 @@ public:
     /** Deprecated function, call *iconVisibility*. */
     Q_DECL_DEPRECATED bool isIconVisible() const;
 
-public Q_SLOTS:
-    /** Set the caption buttons type. */
-    void setCaptionButtonsType(const CaptionButtonsType &type);
-
-    /** Set the title bar and the central widget unified. */
-    void setUnifiedTitleBarAndCentralWidget(bool unified);
-
-    /** Set the title bar mask, the title bar widgets masks united with this mask. */
-    void setTitleBarMask(const QRegion &mask);
-
-    /** Set the left title bar widget and returns the previous widget or nullptr if none, delete this widget as needed.
-        If the widget is transparent for mouse, but not it's children's set \e transparent_for_mouse to true. */
-    QWidget *setLeftTitleBarWidget(QWidget *widget, bool transparent_for_mouse = false);
-
-    /** Set the right title bar widget and returns the previous widget or nullptr if none, delete this widget as needed.
-        If the widget is transparent for mouse, but not it's children's set \e transparent_for_mouse to true. */
-    QWidget *setRightTitleBarWidget(QWidget *widget, bool transparent_for_mouse = false);
-
-    /** Set the center title bar widget and returns the previous widget or nullptr if none, delete this widget as needed.
-        If the widget is transparent for mouse, but not it's children's set \e transparent_for_mouse to true. */
-    QWidget *setCenterTitleBarWidget(QWidget *widget, bool transparent_for_mouse = false);
-
-    /** Set the central widget of *QGoodCentralWidget*. */
-    void setCentralWidget(QWidget *widget);
-
-    /** Set the alignment of *QGoodCentralWidget* title on the title bar.
-        Note: If align to center and also set a central title bar widget
-        the title will be aligned to the left.*/
-    void setTitleAlignment(const Qt::Alignment &alignment);
-
-    /** Set the color of *QGoodCentralWidget* title bar. */
-    void setTitleBarColor(const QColor &color);
-
-    /** Set the color of *QGoodCentralWidget* border. */
-    void setActiveBorderColor(const QColor &color);
-
-    /** Change the visibility of *QGoodCentralWidget* title bar. */
-    void setTitleBarVisible(bool visible);
-
-    /** Change the visibility of *QGoodCentralWidget* caption buttons. */
-    void setCaptionButtonsVisible(bool visible);
-
-    /** Change the visibility of *QGoodCentralWidget* title bar title. */
-    void setTitleVisible(bool visible);
-
-    /** Change the visibility of *QGoodCentralWidget* title bar icon. */
-    void setIconVisibility(const IconVisibilityType &type);
-
-    /** Change the title bar height to \e height multiplied to current pixel ratio. */
-    void setTitleBarHeight(int height);
-
-    /** Change the caption button width to \e width multiplied to current pixel ratio. */
-    void setCaptionButtonWidth(int width);
-
     /** Returns the caption buttons type. */
     CaptionButtonsType captionButtonsType() const;
 
@@ -200,6 +146,60 @@ public Q_SLOTS:
 
     /** Returns the *QGoodCentralWidget* title bar caption button width. */
     int captionButtonWidth() const;
+
+public Q_SLOTS:
+    /** Set the caption buttons type. */
+    void setCaptionButtonsType(const QGoodCentralWidget::CaptionButtonsType &type);
+
+    /** Set the title bar and the central widget unified. */
+    void setUnifiedTitleBarAndCentralWidget(bool unified);
+
+    /** Set the title bar mask, the title bar widgets masks united with this mask. */
+    void setTitleBarMask(const QRegion &mask);
+
+    /** Set the left title bar widget and returns the previous widget or nullptr if none, delete this widget as needed.
+        If the widget is transparent for mouse, but not it's children's set \e transparent_for_mouse to true. */
+    QWidget *setLeftTitleBarWidget(QWidget *widget, bool transparent_for_mouse = false);
+
+    /** Set the right title bar widget and returns the previous widget or nullptr if none, delete this widget as needed.
+        If the widget is transparent for mouse, but not it's children's set \e transparent_for_mouse to true. */
+    QWidget *setRightTitleBarWidget(QWidget *widget, bool transparent_for_mouse = false);
+
+    /** Set the center title bar widget and returns the previous widget or nullptr if none, delete this widget as needed.
+        If the widget is transparent for mouse, but not it's children's set \e transparent_for_mouse to true. */
+    QWidget *setCenterTitleBarWidget(QWidget *widget, bool transparent_for_mouse = false);
+
+    /** Set the central widget of *QGoodCentralWidget*. */
+    void setCentralWidget(QWidget *widget);
+
+    /** Set the alignment of *QGoodCentralWidget* title on the title bar.
+        Note: If align to center and also set a central title bar widget
+        the title will be aligned to the left.*/
+    void setTitleAlignment(const Qt::Alignment &alignment);
+
+    /** Set the color of *QGoodCentralWidget* title bar. */
+    void setTitleBarColor(const QColor &color);
+
+    /** Set the color of *QGoodCentralWidget* border. */
+    void setActiveBorderColor(const QColor &color);
+
+    /** Change the visibility of *QGoodCentralWidget* title bar. */
+    void setTitleBarVisible(bool visible);
+
+    /** Change the visibility of *QGoodCentralWidget* caption buttons. */
+    void setCaptionButtonsVisible(bool visible);
+
+    /** Change the visibility of *QGoodCentralWidget* title bar title. */
+    void setTitleVisible(bool visible);
+
+    /** Change the visibility of *QGoodCentralWidget* title bar icon. */
+    void setIconVisibility(const QGoodCentralWidget::IconVisibilityType &type);
+
+    /** Change the title bar height to \e height multiplied to current pixel ratio. */
+    void setTitleBarHeight(int height);
+
+    /** Change the caption button width to \e width multiplied to current pixel ratio. */
+    void setCaptionButtonWidth(int width);
 
     /** Update the *QGoodCentralWidget* state, it's called internally
         and must be called if changing *QGoodCentralWidget* metrics

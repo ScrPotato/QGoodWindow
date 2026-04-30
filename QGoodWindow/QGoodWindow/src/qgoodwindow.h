@@ -25,9 +25,7 @@ SOFTWARE.
 #ifndef QGOODWINDOW_H
 #define QGOODWINDOW_H
 
-#include <QtCore>
-#include <QtGui>
-#include <QtWidgets>
+#include <QMainWindow>
 #include "intcommon.h"
 #include "qgoodstateholder.h"
 #include "lightstyle.h"
@@ -170,30 +168,8 @@ public:
     /** Get the global state holder. */
     static QGoodStateHolder *qGoodStateHolderInstance();
 
-    /*** QGOODWINDOW FUNCTIONS END ***/
-Q_SIGNALS:
-    /** On handled caption buttons, this SIGNAL report the state of these buttons. */
-    void captionButtonStateChanged(const QGoodWindow::CaptionButtonState &state);
-
-    /** Notify that the system has changed between light and dark mode. */
-    void systemThemeChanged();
-
-    /** Notify that the visibility of caption buttons have changed on macOS. */
-    void captionButtonsVisibilityChangedOnMacOS();
-
-    /*** QGOODWINDOW FUNCTIONS BEGIN ***/
-public Q_SLOTS:
-    /** Set native dark mode on Windows to \e dark. **/
-    void setNativeDarkModeEnabledOnWindows(bool dark);
-
     /** Returns if native dark mode is enabled on Windows. **/
     bool isNativeDarkModeEnabledOnWindows() const;
-
-    /** Set native border color on Windows to \e color. **/
-    void setNativeBorderColorOnWindows(const QColor &color);
-
-    /** Set native caption buttons on macOS visibility to \e visible. **/
-    void setNativeCaptionButtonsVisibleOnMac(bool visible);
 
     /** Returns if native caption buttons are visible on macOS. **/
     bool isNativeCaptionButtonsVisibleOnMac() const;
@@ -201,11 +177,7 @@ public Q_SLOTS:
     /** Returns native caption buttons rect on macOS. **/
     QRect titleBarButtonsRectOnMacOS() const;
 
-    /** Set title bar height for *QGoodWindow*. */
-    void setTitleBarHeight(int height);
-
-    /** Set current icon width on the left side of the title bar of *QGoodWindow*. */
-    void setIconWidth(int width);
+    /*** QGOODWINDOW FUNCTIONS END ***/
 
     /** On Windows, Linux and macOS, returns the actual title bar height, on other OSes returns 0. */
     int titleBarHeight() const;
@@ -215,18 +187,6 @@ public Q_SLOTS:
 
     /** Rect that contains the whole title bar. */
     QRect titleBarRect() const;
-
-    /** Set the mask for the customized title bar. */
-    void setTitleBarMask(const QRegion &mask);
-
-    /** Set the location and shape of handled minimize button, relative to title bar rect. */
-    void setMinimizeMask(const QRegion &mask);
-
-    /** Set the location and shape of handled maximize button, relative to title bar rect. */
-    void setMaximizeMask(const QRegion &mask);
-
-    /** Set the location and shape of handled close button, relative to title bar rect. */
-    void setCloseMask(const QRegion &mask);
 
     /** Get the mask for the customized title bar. */
     QRegion titleBarMask() const;
@@ -240,11 +200,6 @@ public Q_SLOTS:
     /** Get the location and shape of handled close button, relative to title bar rect. */
     QRegion closeMask() const;
 
-    /*** QGOODWINDOW FUNCTIONS END ***/
-
-    /** Set central widget of *QGoodWindow* to \e widget. */
-    void setCentralWidget(QWidget *widget);
-
     /** Returns the central widget of *QGoodWindow*. */
     QWidget *centralWidget() const;
 
@@ -253,30 +208,6 @@ public Q_SLOTS:
 
     /** Get the minimum size hint of *QGoodWindow*. */
     QSize minimumSizeHint() const override;
-
-    /** Set fixed size for *QGoodWindow* to width \e w and height \e h. */
-    void setFixedSize(int w, int h);
-
-    /** Set fixed size for *QGoodWindow* to \e size. */
-    void setFixedSize(const QSize &size);
-
-    /** Set minimum size for *QGoodWindow* to \e size. */
-    void setMinimumSize(const QSize &size);
-
-    /** Set maximum size for *QGoodWindow* to \e size. */
-    void setMaximumSize(const QSize &size);
-
-    /** Set minimum width for *QGoodWindow* to \e w. */
-    void setMinimumWidth(int w);
-
-    /** Set minimum height for *QGoodWindow* to \e h. */
-    void setMinimumHeight(int h);
-
-    /** Set maximum width for *QGoodWindow* to \e w. */
-    void setMaximumWidth(int w);
-
-    /** Set maximum height for *QGoodWindow* to \e h. */
-    void setMaximumHeight(int h);
 
     /** Returns the *QGoodWindow* minimum size. */
     QSize minimumSize() const;
@@ -326,6 +257,101 @@ public Q_SLOTS:
     /** Height of the window. */
     int height() const;
 
+    /** Returns if the *QGoodWindow* is visible or not. */
+    bool isVisible() const;
+
+    /** Returns if the *QGoodWindow* is enabled or not. */
+    bool isEnabled() const;
+
+    /** Returns if the *QGoodWindow* is the foreground window or not. */
+    bool isActiveWindow() const;
+
+    /** Returns if the *QGoodWindow* is maximized or not. */
+    bool isMaximized() const;
+
+    /** Returns if the *QGoodWindow* is minimized or not. */
+    bool isMinimized() const;
+
+    /** Returns if the *QGoodWindow* is in full screen mode or not. */
+    bool isFullScreen() const;
+
+    /** Returns the *QGoodWindow* state. */
+    Qt::WindowStates windowState() const;
+
+    /** Returns the window handle of the *QGoodWindow*. */
+    QWindow *windowHandle() const;
+
+    /** Returns the opacity of the *QGoodWindow*. */
+    qreal windowOpacity() const;
+
+    /** Returns the title of the *QGoodWindow*. */
+    QString windowTitle() const;
+
+    /** Returns the icon of the *QGoodWindow*. */
+    QIcon windowIcon() const;
+
+    /** Returns a copy of the *QGoodWindow* geometry to restore it later. */
+    QByteArray saveGeometry() const;
+
+Q_SIGNALS:
+    /** On handled caption buttons, this SIGNAL report the state of these buttons. */
+    void captionButtonStateChanged(const QGoodWindow::CaptionButtonState &state);
+
+    /** Notify that the system has changed between light and dark mode. */
+    void systemThemeChanged();
+
+    /** Notify that the visibility of caption buttons have changed on macOS. */
+    void captionButtonsVisibilityChangedOnMacOS();
+
+    /*** QGOODWINDOW FUNCTIONS BEGIN ***/
+public Q_SLOTS:
+    /** Set native dark mode on Windows to \e dark. **/
+    void setNativeDarkModeEnabledOnWindows(bool dark);
+
+    /** Set native border color on Windows to \e color. **/
+    void setNativeBorderColorOnWindows(const QColor &color);
+
+    /** Set native caption buttons on macOS visibility to \e visible. **/
+    void setNativeCaptionButtonsVisibleOnMac(bool visible);
+
+    /** Set title bar height for *QGoodWindow*. */
+    void setTitleBarHeight(int height);
+
+    /** Set current icon width on the left side of the title bar of *QGoodWindow*. */
+    void setIconWidth(int width);
+
+    /** Set the mask for the customized title bar. */
+    void setTitleBarMask(const QRegion &mask);
+
+    /** Set the location and shape of handled minimize button, relative to title bar rect. */
+    void setMinimizeMask(const QRegion &mask);
+
+    /** Set the location and shape of handled maximize button, relative to title bar rect. */
+    void setMaximizeMask(const QRegion &mask);
+
+    /** Set the location and shape of handled close button, relative to title bar rect. */
+    void setCloseMask(const QRegion &mask);
+
+    /*** QGOODWINDOW FUNCTIONS END ***/
+
+    /** Set central widget of *QGoodWindow* to \e widget. */
+    void setCentralWidget(QWidget *widget);
+
+    /** Set maximum size for *QGoodWindow* to \e size. */
+    void setMaximumSize(const QSize &size);
+
+    /** Set minimum width for *QGoodWindow* to \e w. */
+    void setMinimumWidth(int w);
+
+    /** Set minimum height for *QGoodWindow* to \e h. */
+    void setMinimumHeight(int h);
+
+    /** Set maximum width for *QGoodWindow* to \e w. */
+    void setMaximumWidth(int w);
+
+    /** Set maximum height for *QGoodWindow* to \e h. */
+    void setMaximumHeight(int h);
+
     /** Move the window to \e x - \e y coordinates. */
     void move(int x, int y);
 
@@ -337,6 +363,15 @@ public Q_SLOTS:
 
     /** Resize the window to \e size. */
     void resize(const QSize &size);
+
+    /** Set fixed size for *QGoodWindow* to width \e w and height \e h. */
+    void setFixedSize(int w, int h);
+
+    /** Set fixed size for *QGoodWindow* to \e size. */
+    void setFixedSize(const QSize &size);
+
+    /** Set minimum size for *QGoodWindow* to \e size. */
+    void setMinimumSize(const QSize &size);
 
     /** Set geometry to pos \e x - \e y, width \e w and height \e h. */
     void setGeometry(int x, int y, int w, int h);
@@ -368,53 +403,17 @@ public Q_SLOTS:
     /** Try to close the *QGoodWindow*, returns true if event is accepted or false otherwise. */
     bool close();
 
-    /** Returns if the *QGoodWindow* is visible or not. */
-    bool isVisible() const;
-
-    /** Returns if the *QGoodWindow* is enabled or not. */
-    bool isEnabled() const;
-
-    /** Returns if the *QGoodWindow* is the foreground window or not. */
-    bool isActiveWindow() const;
-
-    /** Returns if the *QGoodWindow* is maximized or not. */
-    bool isMaximized() const;
-
-    /** Returns if the *QGoodWindow* is minimized or not. */
-    bool isMinimized() const;
-
-    /** Returns if the *QGoodWindow* is in full screen mode or not. */
-    bool isFullScreen() const;
-
-    /** Returns the *QGoodWindow* state. */
-    Qt::WindowStates windowState() const;
-
     /** Sets the state of the *QGoodWindow* to \e state. */
     void setWindowState(Qt::WindowStates state);
-
-    /** Returns the window handle of the *QGoodWindow*. */
-    QWindow *windowHandle() const;
-
-    /** Returns the opacity of the *QGoodWindow*. */
-    qreal windowOpacity() const;
 
     /** Sets the opacity of the *QGoodWindow* to \e level. Where 0.0 is fully transparent and 1.0 fully opaque. */
     void setWindowOpacity(qreal level);
 
-    /** Returns the title of the *QGoodWindow*. */
-    QString windowTitle() const;
-
     /** Sets the title of the *QGoodWindow* to \e title. */
     void setWindowTitle(const QString &title);
 
-    /** Returns the icon of the *QGoodWindow*. */
-    QIcon windowIcon() const;
-
     /** Sets the icon of the *QGoodWindow* to \e icon. */
     void setWindowIcon(const QIcon &icon);
-
-    /** Returns a copy of the *QGoodWindow* geometry to restore it later. */
-    QByteArray saveGeometry() const;
 
     /** Restore *QGoodWindow* to previous geometry \e geometry. */
     bool restoreGeometry(const QByteArray &geometry);
@@ -518,6 +517,7 @@ private:
 
     //Variables
     QPointer<Shadow> m_shadow;
+    bool m_wayland;
 
     int m_margin;
     QPoint m_cursor_pos;

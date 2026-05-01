@@ -284,14 +284,6 @@ QGoodWindow::QGoodWindow(QWidget *parent, const QColor &clear_color) : QMainWind
 
     m_parent = parent;
 
-#ifdef Q_OS_WIN                           // STUPID FUCKING WORKAROUND THAT TOOK ME LIKE A FUCKING HOUR
-    QTimer::singleShot(0, this, [this](){ // BASICALLY ALLOWS YOU FIND THE CHILDREN AND SET THE STYLES
-        if (m_parent) {                   // PROPERLY BY NOT GIVING HELPERS ETC
-            QObject::setParent(m_parent); // PROBABLY NOT HEALTHY BUT IT SEEMS FINE ON MY USAGE
-        }
-    });
-#endif
-
     m_is_using_system_borders = shouldBordersBeDrawnBySystem();
 
     m_dark = isSystemThemeDark();
@@ -545,6 +537,13 @@ QGoodWindow::QGoodWindow(QWidget *parent, const QColor &clear_color) : QMainWind
 #else
     func_default_name_icon();
 #endif
+#endif
+
+#ifdef Q_OS_WIN                           // STUPID FUCKING WORKAROUND THAT TOOK ME LIKE A FUCKING HOUR
+                                          // BASICALLY ALLOWS YOU FIND THE CHILDREN AND SET THE STYLES
+        if (m_parent) {                   // PROPERLY BY NOT GIVING HELPERS ETC
+            QObject::setParent(m_parent); // PROBABLY NOT HEALTHY BUT IT SEEMS FINE ON MY USAGE
+        }
 #endif
 }
 

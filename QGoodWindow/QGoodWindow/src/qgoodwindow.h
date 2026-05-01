@@ -587,6 +587,8 @@ private:
     bool m_is_caption_button_pressed;
     qintptr m_last_caption_button_hovered;
     qintptr m_caption_button_pressed;
+
+    static bool m_setup;
 #endif
     //\endcond
 };

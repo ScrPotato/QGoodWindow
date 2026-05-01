@@ -275,8 +275,10 @@ bool m_theme_change_registered = false;
 #define GOODPARENT(parent) nullptr
 #endif
 
+bool QGoodWindow::m_setup = false;
 QGoodWindow::QGoodWindow(QWidget *parent, const QColor &clear_color) : QMainWindow(GOODPARENT(parent))
 {
+    Q_ASSERT_X(m_setup, "QGoodWindow::QGoodWindow", "setup() must be called before construction");
 #ifdef QGOODWINDOW
     qRegisterMetaType<QGoodWindow::CaptionButtonState>("QGoodWindow::CaptionButtonState");
 
@@ -697,6 +699,7 @@ void QGoodWindow::aboutQGoodWindow(QGoodWindow *parent, const QString &title)
 
 void QGoodWindow::setup()
 {
+    m_setup = true;
 #ifdef QGOODWINDOW
     //Init resources
     Q_INIT_RESOURCE(qgoodwindow_style);
@@ -739,6 +742,10 @@ void QGoodWindow::setup()
         if (pSetProcessDpiAwarenessContext)
             pSetProcessDpiAwarenessContext(HANDLE(AWARENESS_CONTEXT_DPI_AWARENESS_CONTEXT_PER_MONITOR_AWARE_V2));
     }
+    QTimer::singleShot(0, [](){                                     // combobox animation is broken on windows style disable it for now
+        QApplication::setEffectEnabled(Qt::UI_AnimateCombo, false); // imho if you're using a custom title
+    });                                                             // you should be using fusion
+
 #endif
 
 #if QT_VERSION >= QT_VERSION_CHECK(5, 14, 0)

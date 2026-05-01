@@ -488,10 +488,13 @@ QGoodWindow::QGoodWindow(QWidget *parent, const QColor &clear_color) : QMainWind
         QMainWindow::setWindowFlags(Qt::Window | Qt::FramelessWindowHint | Qt::Tool);
     }
 
-    m_shadow = new Shadow(qintptr(nullptr), this, this);
-    m_shadow->installEventFilter(this);
-    m_shadow->setMouseTracking(true);
-    connect(m_shadow, &Shadow::showSignal, this, &QGoodWindow::sizeMoveBorders);
+    if (!m_wayland) {
+        m_shadow = new Shadow(qintptr(nullptr), this, this);
+        m_shadow->installEventFilter(this);
+        m_shadow->setMouseTracking(true);
+        connect(m_shadow, &Shadow::showSignal, this, &QGoodWindow::sizeMoveBorders);
+    }
+
 #endif
 #ifdef Q_OS_MAC
     installEventFilter(this);
@@ -2041,12 +2044,12 @@ bool QGoodWindow::event(QEvent *event)
         {
             sizeMoveBorders();
 
-            if (isActiveWindow())
+            if (isActiveWindow() && !m_wayland)
             {
                 m_shadow->showLater();
             }
         }
-        else
+        else if (!m_wayland)
         {
             m_shadow->hide();
         }
@@ -2061,7 +2064,8 @@ bool QGoodWindow::event(QEvent *event)
         if (!windowState().testFlag(Qt::WindowNoState))
             break;
 
-        m_shadow->hide();
+        if (!m_wayland)
+            m_shadow->hide();
 
         break;
     }
@@ -2075,7 +2079,8 @@ bool QGoodWindow::event(QEvent *event)
         if (!windowState().testFlag(Qt::WindowNoState))
             break;
 
-        m_shadow->show();
+        if (!m_wayland)
+            m_shadow->show();
 
         break;
     }
@@ -4211,12 +4216,13 @@ void QGoodWindow::setCursorForCurrentPos()
 
     QWidget *widget = QApplication::widgetAt(cursor_pos);
 
-    if (!widget || (widget->window() != m_shadow && widget->window() != qApp->activeModalWidget()))
+    if (!widget
+        || ((widget->window() != m_shadow && widget->window() != qApp->activeModalWidget())
+            && !(m_wayland && this->isAncestorOf(widget))))
     {
         QApplication::restoreOverrideCursor();
         return;
     }
-
     auto setQtCursor = [](Qt::CursorShape cursorShape)
     {
         const QCursor *c = QApplication::overrideCursor();
@@ -4503,7 +4509,7 @@ void QGoodWindow::sizeMove()
 
 void QGoodWindow::sizeMoveBorders()
 {
-    if (!windowState().testFlag(Qt::WindowNoState))
+    if (!windowState().testFlag(Qt::WindowNoState) || m_wayland)
         return;
 
     const int border_width = BORDERWIDTHDPI;
@@ -4606,6 +4612,7 @@ qintptr QGoodWindow::ncHitTest(int pos_x, int pos_y)
 
 #ifdef Q_OS_LINUX
     border_width = qFloor(BORDERWIDTHDPI / m_pixel_ratio);
+    border_width = m_wayland ? border_width * 2 : border_width; // wayland doesnt have a shadow, expand for it
 #endif
 
 #ifdef Q_OS_WIN

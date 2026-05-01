@@ -284,6 +284,14 @@ QGoodWindow::QGoodWindow(QWidget *parent, const QColor &clear_color) : QMainWind
 
     m_parent = parent;
 
+#ifdef Q_OS_WIN                           // STUPID FUCKING WORKAROUND THAT TOOK ME LIKE A FUCKING HOUR
+    QTimer::singleShot(0, this, [this](){ // BASICALLY ALLOWS YOU FIND THE CHILDREN AND SET THE STYLES
+        if (m_parent) {                   // PROPERLY BY NOT GIVING HELPERS ETC
+            QObject::setParent(m_parent); // PROBABLY NOT HEALTHY BUT IT SEEMS FINE ON MY USAGE
+        }
+    });
+#endif
+
     m_is_using_system_borders = shouldBordersBeDrawnBySystem();
 
     m_dark = isSystemThemeDark();
@@ -431,10 +439,6 @@ QGoodWindow::QGoodWindow(QWidget *parent, const QColor &clear_color) : QMainWind
 
     if (m_parent) {
         m_parent->installEventFilter(this);
-
-#ifdef Q_OS_WIN
-        updateEffectiveStyleSheet();
-#endif
     }
 
     if (!m_native_event)
@@ -1871,50 +1875,6 @@ bool QGoodWindow::restoreGeometry(const QByteArray &geometry)
 #endif
 }
 
-#ifdef Q_OS_WIN
-QString QGoodWindow::styleSheet() const
-{
-    return m_ownStyleSheet;
-}
-
-void QGoodWindow::setStyleSheet(const QString &styleSheet)
-{
-    m_ownStyleSheet = styleSheet;
-    updateEffectiveStyleSheet();
-}
-
-void QGoodWindow::updateEffectiveStyleSheet()
-{
-    m_inheritedStyleSheet.clear();
-
-    QStringList inheritedSheets;
-
-    QWidget *w = m_parent;
-
-    while (w) {
-        const QString sheet = w->styleSheet();
-
-        if (!sheet.isEmpty())
-            inheritedSheets.prepend(sheet);
-
-        w = w->parentWidget();
-    }
-
-    m_inheritedStyleSheet = inheritedSheets.join(QLatin1Char('\n'));
-
-    QString effective = m_inheritedStyleSheet;
-
-    if (!m_ownStyleSheet.isEmpty()) {
-        if (!effective.isEmpty())
-            effective += QLatin1Char('\n');
-
-        effective += m_ownStyleSheet;
-    }
-
-    QMainWindow::setStyleSheet(effective);
-}
-#endif
-
 bool QGoodWindow::event(QEvent *event)
 {
 #if defined Q_OS_LINUX || defined Q_OS_MAC
@@ -2225,13 +2185,6 @@ bool QGoodWindow::eventFilter(QObject *watched, QEvent *event)
 
             break;
         }
-#ifdef Q_OS_WIN
-        case QEvent::StyleChange:
-        {
-            updateEffectiveStyleSheet();
-            break;
-        }
-#endif
         default:
             break;
         }

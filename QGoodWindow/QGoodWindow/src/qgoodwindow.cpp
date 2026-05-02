@@ -85,7 +85,7 @@ private:
             if (parent_widget)
                 parent_widget->activateWindow();
 
-            delete this;
+            this->deleteLater();
             return true;
         }
         default:
@@ -2975,6 +2975,12 @@ LRESULT QGoodWindow::WndProc(HWND hwnd, UINT message, WPARAM wParam, LPARAM lPar
     }
     case WM_CLOSE:
     {
+        // close children windows as well or else we get stuck at
+        // flush: GetDC failed (Invalid window handle.)
+        for(const auto& win : gw->findChildren<QGoodWindow*>()) {
+            win->close();
+        }
+
         //Send Qt QCloseEvent to the window,
         //which allows to accept or reject the window close.
         gw->m_self_generated_close_event = true;

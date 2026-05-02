@@ -217,11 +217,12 @@ inline bool isWin11OrGreater()
 
 #if QT_VERSION >= QT_VERSION_CHECK(6, 0, 0)
 #include <utility>
-#define QGOODWINDOW_AS_CONST std::as_const
+#define QGOODWINDOW_AS_CONST(x) std::as_const(x)
+#elif QT_VERSION >= QT_VERSION_CHECK(5, 7, 0)
+#define QGOODWINDOW_AS_CONST(x) qAsConst(x)
 #else
-#define QGOODWINDOW_AS_CONST qAsConst
+#define QGOODWINDOW_AS_CONST(x) (x)
 #endif
-
 
 #ifdef Q_OS_LINUX
 #ifdef QT_VERSION_QT5

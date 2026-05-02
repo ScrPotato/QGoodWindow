@@ -3656,7 +3656,7 @@ void QGoodWindow::sizeMoveMainWindow()
 {
     bool opengl_adjust = false;
 
-#if defined QT_VERSION_QT5 && QT_VERSION >= QT_VERSION_CHECK(5, 14, 0)
+#if QT_VERSION >= QT_VERSION_CHECK(5, 14, 0)
     QWidgetList list;
     if (m_central_widget)
     {

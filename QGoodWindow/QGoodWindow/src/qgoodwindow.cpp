@@ -358,8 +358,7 @@ QGoodWindow::QGoodWindow(QWidget *parent, const QColor &clear_color) : QMainWind
     HWND parent_hwnd = nullptr;
 
     if (m_parent)
-        parent_hwnd = HWND(m_parent->window()->winId()); // if we do not use window()'s winID the mouse collision gets fucked up
-                                                         // if you create a new qgoodwindow with a parent
+        parent_hwnd = HWND(m_parent->winId());
 
     WNDCLASSEXW wcx;
     memset(&wcx, 0, sizeof(WNDCLASSEXW));

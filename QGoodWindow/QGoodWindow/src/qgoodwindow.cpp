@@ -22,15 +22,15 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 */
 
-#if defined QGOODWINDOW && defined __linux__
-#include <gtk/gtk.h>
-#endif
-
 #include "common.h"
 #include "qgoodwindow.h"
 #include "shadow.h"
 #include "qgooddialog.h"
 #include "../version/version.h"
+
+#if defined QGOODWINDOW && defined __linux__ && QT_VERSION < QT_VERSION_CHECK(6, 5, 0)
+#include <gtk/gtk.h>
+#endif
 
 #ifndef QGOODWINDOW
 #ifdef Q_OS_WIN
@@ -235,9 +235,14 @@ inline bool isWin11OrGreater()
 
 namespace QGoodWindowUtils
 {
+
 QList<QGoodWindow*> m_gw_list;
 
+#if QT_VERSION >= QT_VERSION_CHECK(6, 5, 0)
+QMetaObject::Connection m_theme_connection;
+#else
 GtkSettings *m_settings = nullptr;
+#endif
 
 void themeChangeNotification()
 {
@@ -249,11 +254,38 @@ void themeChangeNotification()
 
 void registerThemeChangeNotification()
 {
+#if QT_VERSION >= QT_VERSION_CHECK(6, 5, 0)
+    if (!m_theme_connection)
+    {
+        m_theme_connection = QObject::connect(
+            qApp->styleHints(),
+            &QStyleHints::colorSchemeChanged,
+            qApp,
+            [](Qt::ColorScheme) {
+                themeChangeNotification();
+            }
+            );
+    }
+#else
+#ifdef Q_OS_LINUX
     if (!m_settings)
     {
         m_settings = gtk_settings_get_default();
-        g_signal_connect(m_settings, "notify::gtk-theme-name", themeChangeNotification, nullptr);
+
+        if (m_settings)
+        {
+            g_signal_connect(
+                m_settings,
+                "notify::gtk-theme-name",
+                G_CALLBACK(+[](GtkSettings *, GParamSpec *, gpointer) {
+                    themeChangeNotification();
+                }),
+                nullptr
+                );
+        }
     }
+#endif
+#endif
 }
 }
 #endif
@@ -712,12 +744,12 @@ void QGoodWindow::setup()
 #endif
 
 #ifdef Q_OS_LINUX
-    qputenv("XDG_SESSION_TYPE", "xcb");
-    qputenv("QT_QPA_PLATFORM", "xcb");
-
+#if QT_VERSION < QT_VERSION_CHECK(6, 5, 0)
     int argc = 0;
     char **argv = nullptr;
+
     gtk_init(&argc, &argv);
+#endif
 #endif
 
 #ifndef Q_OS_MAC
@@ -787,6 +819,15 @@ bool QGoodWindow::isSystemThemeDark()
 #ifdef Q_OS_LINUX
     dark = false;
 
+#if QT_VERSION >= QT_VERSION_CHECK(6, 5, 0)
+    const auto scheme = qApp->styleHints()->colorScheme();
+
+    if (scheme == Qt::ColorScheme::Dark) {
+        dark = true;
+    } else if (scheme == Qt::ColorScheme::Light) {
+        dark = false;
+    }
+#else
     if (gtk_init_check(nullptr, nullptr)) {
         GtkSettings *settings = gtk_settings_get_default();
         if (settings) {
@@ -799,6 +840,7 @@ bool QGoodWindow::isSystemThemeDark()
             }
         }
     }
+#endif
 #endif
 #ifdef Q_OS_MAC
     dark = QString(macOSNative::themeName()).endsWith("Dark", Qt::CaseInsensitive);

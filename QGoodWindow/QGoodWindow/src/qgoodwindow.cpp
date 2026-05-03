@@ -1605,6 +1605,12 @@ bool QGoodWindow::close()
 
     return m_closed;
 #else
+    const auto windows = findChildren<QMainWindow*>();
+
+    for (auto* win : windows) {
+        win->close();
+    }
+
     return QMainWindow::close();
 #endif
 }
@@ -2977,7 +2983,9 @@ LRESULT QGoodWindow::WndProc(HWND hwnd, UINT message, WPARAM wParam, LPARAM lPar
     {
         // close children windows as well or else we get stuck at
         // flush: GetDC failed (Invalid window handle.)
-        for(const auto& win : gw->findChildren<QGoodWindow*>()) {
+        const auto windows = gw->findChildren<QMainWindow*>();
+
+        for (auto* win : windows) {
             win->close();
         }
 

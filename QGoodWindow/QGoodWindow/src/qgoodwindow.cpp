@@ -4494,20 +4494,25 @@ void QGoodWindow::sizeMoveBorders()
 
     for (const QScreen *screen : app_screens)
     {
-        visible_rgn += screen->availableGeometry();
+        visible_rgn += screen->geometry();
     }
 
     QRect frame_geom = frameGeometry();
+
     frame_geom.adjust(-border_width, -border_width, border_width, border_width);
 
     QRegion rgn = m_shadow->rect();
     rgn = rgn.subtracted(mask().translated(border_width, border_width));
 
     rgn.translate(frame_geom.topLeft());
-
     rgn = rgn.intersected(visible_rgn);
 
-    rgn.translate(-rgn.boundingRect().topLeft());
+    const QRect rgn_bounds = rgn.boundingRect();
+
+    if (!rgn_bounds.isEmpty())
+    {
+        rgn.translate(m_shadow->rect().bottomRight() - rgn_bounds.bottomRight());
+    }
 
     m_shadow->setMask(rgn);
 

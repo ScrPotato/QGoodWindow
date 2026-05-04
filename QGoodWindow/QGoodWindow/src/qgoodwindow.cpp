@@ -316,7 +316,6 @@ QGoodWindow::QGoodWindow(QWidget *parent, const QColor &clear_color) : QMainWind
     qRegisterMetaType<QGoodWindow::CaptionButtonState>("QGoodWindow::CaptionButtonState");
 
     m_parent = parent;
-
     m_is_using_system_borders = shouldBordersBeDrawnBySystem();
 
     m_dark = isSystemThemeDark();
@@ -475,7 +474,6 @@ QGoodWindow::QGoodWindow(QWidget *parent, const QColor &clear_color) : QMainWind
     if (m_parent)
     {
         disableMinimize();
-        disableMaximize();
     }
 
     //Fix that hides native title bar.

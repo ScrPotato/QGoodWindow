@@ -26,9 +26,7 @@ SOFTWARE.
 #ifndef LIGHTSTYLE
 #define LIGHTSTYLE
 
-#include <QtCore>
-#include <QtGui>
-#include <QtWidgets>
+#include <QProxyStyle>
 
 //\cond HIDDEN_SYMBOLS
 class LightStyle : public QProxyStyle

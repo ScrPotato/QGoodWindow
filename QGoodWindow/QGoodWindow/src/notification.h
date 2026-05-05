@@ -25,8 +25,8 @@ SOFTWARE.
 #ifndef NOTIFICATION_H
 #define NOTIFICATION_H
 
-#include <QtCore>
-#include <QtWidgets>
+#include <QWindow>
+#include <QList>
 
 //\cond HIDDEN_SYMBOLS
 class Notification

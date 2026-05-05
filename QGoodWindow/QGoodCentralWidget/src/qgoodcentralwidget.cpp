@@ -22,6 +22,12 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 */
 
+#include <QTimer>
+#include <QVBoxLayout>
+#include <QDialog>
+#include <QStackedLayout>
+#include <QPainterPath>
+
 #include "qgoodcentralwidget.h"
 
 #ifdef QGOODWINDOW
@@ -866,7 +872,7 @@ void QGoodCentralWidget::paintEvent(QPaintEvent *event)
 
         if (window_no_state)
         {
-            color = window_active ? m_active_border_color : QColor("#AAAAAA");
+            color = window_active ? m_active_border_color : QColor(0xAAAAAA);
         }
 
         QRegion mask;

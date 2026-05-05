@@ -25,11 +25,11 @@ SOFTWARE.
 #ifndef TITLEBAR_H
 #define TITLEBAR_H
 
-#include <QtCore>
-#include <QtGui>
-#include <QtWidgets>
+#include <QSpacerItem>
+
 #include <QGoodWindow>
 #include <QGoodCentralWidget>
+
 #include "iconwidget.h"
 #include "titlewidget.h"
 #include "captionbutton.h"

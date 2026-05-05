@@ -26,8 +26,7 @@ SOFTWARE.
 #define QGOODCENTRALWIDGET_H
 
 #include <QGoodWindow>
-
-#include "qgoodcentralwidget_global.h"
+#include <QFrame>
 
 #ifdef QGOODWINDOW
 class TitleBar;

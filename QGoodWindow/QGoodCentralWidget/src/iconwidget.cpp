@@ -24,6 +24,8 @@ SOFTWARE.
 
 #include "iconwidget.h"
 
+#include <QPainter>
+
 #define ICONWIDTH 16
 #define ICONHEIGHT 16
 

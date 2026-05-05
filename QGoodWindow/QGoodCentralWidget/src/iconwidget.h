@@ -25,9 +25,7 @@ SOFTWARE.
 #ifndef ICONWIDGET_H
 #define ICONWIDGET_H
 
-#include <QtCore>
-#include <QtGui>
-#include <QtWidgets>
+#include <QWidget>
 
 //\cond HIDDEN_SYMBOLS
 class IconWidget : public QWidget

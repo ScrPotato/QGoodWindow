@@ -25,9 +25,7 @@ SOFTWARE.
 #ifndef QGOODWINDOW_GLOBAL_H
 #define QGOODWINDOW_GLOBAL_H
 
-#include <QtCore/qglobal.h>
-
-#include "qgoodwindow_helper.h"
+#include <QtGlobal>
 
 #ifndef QGOODWINDOW_SHARED_EXPORT
 #ifdef QGOODWINDOW_LIBRARY

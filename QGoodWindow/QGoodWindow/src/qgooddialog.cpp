@@ -25,6 +25,15 @@ SOFTWARE.
 #include "qgooddialog.h"
 #include "qgoodwindow.h"
 
+#include <QWindow>
+#include <QScreen>
+#include <QApplication>
+#include <QMessageBox>
+#include <QInputDialog>
+#include <QEvent>
+#include <QTimer>
+#include <QShortcut>
+
 #ifdef Q_OS_WIN
 #include "shadow.h"
 #endif

@@ -26,10 +26,10 @@ SOFTWARE.
 #define QGOODWINDOW_H
 
 #include <QMainWindow>
+#include <QPointer>
+
 #include "intcommon.h"
 #include "qgoodstateholder.h"
-#include "lightstyle.h"
-#include "darkstyle.h"
 
 #ifdef Q_OS_WIN
 #include <windows.h>

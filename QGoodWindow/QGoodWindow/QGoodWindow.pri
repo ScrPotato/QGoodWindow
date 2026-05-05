@@ -82,10 +82,6 @@ equals(QT_MAJOR_VERSION, 5){
 QT += x11extras
 }
 
-equals(QT_MAJOR_VERSION, 6){
-QT += gui-private
-}
-
 SOURCES += \
     $$PWD/src/shadow.cpp \
     $$PWD/src/qgooddialog.cpp

@@ -23,6 +23,11 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 */
 
+#include <QApplication>
+#include <QStyleFactory>
+#include <QFont>
+#include <QFile>
+
 #include "darkstyle.h"
 
 #ifdef Q_OS_WIN

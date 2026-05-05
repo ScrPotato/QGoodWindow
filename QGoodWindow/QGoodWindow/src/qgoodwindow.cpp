@@ -26,6 +26,8 @@ SOFTWARE.
 #include "qgoodwindow.h"
 #include "shadow.h"
 #include "qgooddialog.h"
+#include "lightstyle.h"
+#include "darkstyle.h"
 #include "../version/version.h"
 
 #if defined QGOODWINDOW && defined __linux__ && QT_VERSION < QT_VERSION_CHECK(6, 5, 0)
@@ -215,6 +217,15 @@ inline bool isWin11OrGreater()
 }
 #endif
 
+#include <QWindow>
+#include <QScreen>
+#include <QApplication>
+#include <QTimer>
+#include <QMessageBox>
+#include <QMouseEvent>
+#include <QPainter>
+#include <QStyle>
+
 #if QT_VERSION >= QT_VERSION_CHECK(6, 0, 0)
 #include <utility>
 #define QGOODWINDOW_AS_CONST(x) std::as_const(x)
@@ -225,6 +236,9 @@ inline bool isWin11OrGreater()
 #endif
 
 #ifdef Q_OS_LINUX
+#if QT_VERSION >= QT_VERSION_CHECK(6, 5, 0)
+#include <QStyleHints>
+#endif
 #ifdef QT_VERSION_QT5
 #include <QtX11Extras/QX11Info>
 #endif

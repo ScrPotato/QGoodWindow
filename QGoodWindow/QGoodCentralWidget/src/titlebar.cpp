@@ -22,6 +22,13 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 */
 
+#include <QApplication>
+#include <QHBoxLayout>
+#include <QStyleFactory>
+#include <QStackedLayout>
+#include <QTimer>
+#include <QStyle>
+
 #include "titlebar.h"
 
 TitleBar::TitleBar(QGoodWindow *gw, QGoodCentralWidget *gcw, QWidget *parent) : QFrame(parent)

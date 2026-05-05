@@ -26,11 +26,7 @@ SOFTWARE.
 #ifndef DARKSTYLE
 #define DARKSTYLE
 
-#include <QApplication>
-#include <QStyleFactory>
 #include <QProxyStyle>
-#include <QFile>
-#include <QFont>
 
 //\cond HIDDEN_SYMBOLS
 class DarkStyle : public QProxyStyle

@@ -25,7 +25,7 @@ SOFTWARE.
 #ifndef INTCOMMON
 #define INTCOMMON
 
-#include "qgoodwindow_helper.h"
+#include <QtTypes>
 
 #ifdef QT_VERSION_QT5
 typedef long qgoodintptr;

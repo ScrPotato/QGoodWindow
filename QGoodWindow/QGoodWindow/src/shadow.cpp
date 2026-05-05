@@ -22,7 +22,11 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 */
 
-#include "common.h"
+#include <QApplication>
+#include <QPainter>
+#include <QEvent>
+#include <QTimer>
+
 #include "shadow.h"
 #include "qgoodwindow.h"
 

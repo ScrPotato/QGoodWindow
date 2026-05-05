@@ -25,9 +25,8 @@ SOFTWARE.
 #ifndef SHADOW_H
 #define SHADOW_H
 
-#include <QtCore>
-#include <QtGui>
-#include <QtWidgets>
+#include <QWidget>
+#include <QPointer>
 #include "intcommon.h"
 
 #if defined Q_OS_WIN || defined Q_OS_LINUX

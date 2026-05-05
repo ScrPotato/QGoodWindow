@@ -51,9 +51,7 @@ inline int BORDERHEIGHT()
 
 #endif
 
-#include <QtCore>
-#include <QtGui>
-#include <QtWidgets>
+#include <QtSystemDetection>
 
 #ifdef Q_OS_LINUX
 

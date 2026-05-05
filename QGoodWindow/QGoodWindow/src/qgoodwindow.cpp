@@ -85,7 +85,7 @@ private:
             if (parent_widget)
                 parent_widget->activateWindow();
 
-            this->deleteLater();
+            delete this;
             return true;
         }
         default:

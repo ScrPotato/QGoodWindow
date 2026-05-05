@@ -57,7 +57,13 @@ SOFTWARE.
 #endif
 
 #ifdef Q_OS_WIN
-
+#include <QEvent>
+#include <QLibrary>
+#include <QFileDialog>
+#include <QSizeGrip>
+#include <QAbstractNativeEventFilter>
+#include <QHBoxLayout>
+#include <QMenu>
 #ifdef QT_VERSION_QT5
 #include <QtWinExtras>
 #endif
